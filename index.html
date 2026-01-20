@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جمعية الخير لتنمية المجتمع بمسير | لوحة التحكم</title>
+    <meta name="description"
+        content="نظام إدارة جمعية الخير لتنمية المجتمع بمسير - إدارة المتبرعين والحالات والمساعدات">
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>دخول النظام</h2>
+            </div>
+            <div class="login-body">
+                <p>يرجى إدخال كلمة المرور للمتابعة</p>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password-input" placeholder="كلمة المرور">
+                </div>
+                <button id="login-btn" class="btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 20px;">
+                    دخول
+                </button>
+                <p id="login-error" style="color: #d13438; font-size: 0.8rem; margin-top: 10px; display: none;">كلمة
+                    المرور غير صحيحة!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="main-app" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    <span>جمعية الخير</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-page="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span>الرئيسية</span>
+                    </li>
+                    <li data-page="cases">
+                        <i class="fas fa-users"></i>
+                        <span>إدارة الحالات</span>
+                    </li>
+                    <li data-page="donations">
+                        <i class="fas fa-donate"></i>
+                        <span>التبرعات</span>
+                    </li>
+                    <li data-page="hidden">
+                        <i class="fas fa-eye-slash"></i>
+                        <span>الحالات المخفية</span>
+                    </li>
+                    <li data-page="expenses">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>المصروفات</span>
+                    </li>
+                    <li data-page="volunteers">
+                        <i class="fas fa-user-friends"></i>
+                        <span>المتطوعين</span>
+                    </li>
+                    <li data-page="reports">
+                        <i class="fas fa-print"></i>
+                        <span>التقارير</span>
+                    </li>
+                    <li data-page="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>الإعدادات</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header (Title Bar) -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button id="toggle-sidebar" class="icon-btn" style="color: white;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span style="font-weight: 600; font-size: 0.9rem;">برنامج الخير - <span id="page-title">لوحة
+                            التحكم</span></span>
+                </div>
+                <div class="header-right">
+                    <div class="search-box" style="background: rgba(255,255,255,0.2); height: 32px;">
+                        <i class="fas fa-search" style="color: white;"></i>
+                        <input type="text" id="global-search" placeholder="بحث بالاسم أو الرقم القومي..."
+                            style="color: white;">
+                    </div>
+                    <div class="user-profile" style="padding: 0;">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=217346"
+                            alt="User Avatar" style="width: 28px; height: 28px;">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Ribbon Menu -->
+            <div class="ribbon">
+                <div class="ribbon-group">
+                    <div style="display: flex; gap: 10px;">
+                        <button id="link-folder-btn" class="btn-primary"
+                            style="flex-direction: column; padding: 5px 15px; font-size: 0.8rem; background: #d13438; color: white;">
+                            <i class="fas fa-link"></i>
+                            <span>ربط مجلد الفلاشة</span>
+                        </button>
+                        <div
+                            style="display: flex; flex-direction: column; gap: 4px; border-right: 1px solid #eee; padding-right: 10px; justify-content: center;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div id="sync-indicator"
+                                    style="width: 10px; height: 10px; border-radius: 50%; background: #ccc; transition: background 0.3s;">
+                                </div>
+                                <span id="sync-status" style="font-size: 0.75rem; color: #666; font-weight: 600;">غير
+                                    متصل بالمجلد</span>
+                            </div>
+                            <span id="stat-count" style="font-size: 0.7rem; color: #999;"></span>
+                        </div>
+                        <button class="btn-primary"
+                            style="flex-direction: column; padding: 5px 15px; font-size: 0.8rem; background: #eee; color: #333;"
+                            onclick="exportToExcel()">
+                            <i class="fas fa-file-excel"></i>
+                            <span>تصدير إكسيل</span>
+                        </button>
+                        <button class="btn-primary"
+                            style="flex-direction: column; padding: 5px 15px; font-size: 0.8rem; background: #eee; color: #333;"
+                            onclick="window.print()">
+                            <i class="fas fa-print"></i>
+                            <span>طباعة</span>
+                        </button>
+                    </div>
+                    <span class="ribbon-label">مزامنة البيانات (الفلاشة)</span>
+                </div>
+                <div class="ribbon-group">
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" style="padding: 5px 15px; font-size: 0.8rem;"
+                            onclick="openCaseModal()">
+                            <i class="fas fa-plus"></i>
+                            <span>إضافة حالة</span>
+                        </button>
+                    </div>
+                    <span class="ribbon-label">العمليات</span>
+                </div>
+            </div>
+
+            <!-- Page Content Container -->
+            <div id="content-area" class="content-area">
+                <!-- Content will be injected here by JS -->
+            </div>
+
+            <!-- Status Bar -->
+            <footer class="status-bar">
+                <div style="display: flex; gap: 20px; align-items: center; width: 100%;">
+                    <div id="sync-indicator" style="width: 12px; height: 12px; border-radius: 50%; background: #ccc;">
+                    </div>
+                    <span id="sync-status">غير متصل بالفلاشة (البيانات محفوظة مؤقتاً)</span>
+                    <span>|</span>
+                    <span id="stat-count">الحالات: 0</span>
+                    <span style="margin-right: auto;">العربية (مصر)</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal for Adding Case -->
+    <div id="case-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>إضافة حالة جديدة</h3>
+                <i class="fas fa-times close-modal" onclick="closeCaseModal()"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="input-group-office">
+                        <label>المركز</label>
+                        <input type="text" id="modal-case-center" class="office-input" placeholder="مثلاً: كفر الشيخ">
+                    </div>
+                    <div class="input-group-office">
+                        <label>اسم الحالة</label>
+                        <div class="dropdown-container">
+                            <input type="text" id="modal-case-name" class="office-input"
+                                oninput="searchExistingCases('name', this.value)" autocomplete="off">
+                            <div id="case-name-results" class="dropdown-results"></div>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
+                        <label>الرقم القومي</label>
+                        <div class="dropdown-container">
+                            <input type="text" id="modal-case-national-id" class="office-input"
+                                oninput="searchExistingCases('nationalId', this.value)" autocomplete="off">
+                            <div id="case-id-results" class="dropdown-results"></div>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
+                        <label>المهنة</label>
+                        <input type="text" id="modal-case-job" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>رقم الهاتف</label>
+                        <div class="dropdown-container">
+                            <input type="text" id="modal-case-phone" class="office-input"
+                                oninput="searchExistingCases('phone', this.value)" autocomplete="off">
+                            <div id="case-phone-results" class="dropdown-results"></div>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
+                        <label>اسم الزوج/ة</label>
+                        <div class="dropdown-container">
+                            <input type="text" id="modal-case-spouse-name" class="office-input"
+                                oninput="searchExistingCases('spouseName', this.value)" autocomplete="off">
+                            <div id="case-spouse-name-results" class="dropdown-results"></div>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
+                        <label>الرقم القومي للزوج/ة</label>
+                        <div class="dropdown-container">
+                            <input type="text" id="modal-case-spouse-id" class="office-input"
+                                oninput="searchExistingCases('spouseId', this.value)" autocomplete="off">
+                            <div id="case-spouse-id-results" class="dropdown-results"></div>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
+                        <label>عدد الأفراد</label>
+                        <input type="number" id="modal-case-family" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>الوضع (الحالة)</label>
+                        <input type="text" id="modal-case-social" class="office-input"
+                            placeholder="مثلاً: أرملة، عاجز...">
+                    </div>
+                    <div class="input-group-office" style="grid-column: span 2;">
+                        <label>تصنيف الحالة (يمكن اختيار أكثر من نوع)</label>
+                        <div class="classification-grid" id="modal-case-types">
+                            <label class="check-item"><input type="checkbox" value="المرضى"> المرضى</label>
+                            <label class="check-item"><input type="checkbox" value="زواج متعسر"> زواج متعسر</label>
+                            <label class="check-item"><input type="checkbox" value="الغارمين"> الغارمين</label>
+                            <label class="check-item"><input type="checkbox" value="الأيتام"> الأيتام</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي صك الخير"> مستفيدي صك
+                                الخير</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي خدمات"> مستفيدي
+                                خدمات</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي المشاريع"> مستفيدي
+                                المشاريع</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي رمضان"> مستفيدي
+                                رمضان</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي مدارس"> مستفيدي
+                                مدارس</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي زكاة المال"> مستفيدي زكاة
+                                المال</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي ملابس الأعياد"> مستفيدي
+                                ملابس الأعياد</label>
+                            <label class="check-item"><input type="checkbox" value="مستفيدي الصدقات"> مستفيدي
+                                الصدقات</label>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
+                        <label>تاريخ التسجيل</label>
+                        <input type="date" id="modal-case-date" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>جهة التبرع (مصدر الحالة)</label>
+                        <input type="text" id="modal-case-source" class="office-input"
+                            placeholder="مثلاً: جمعية الأورمان">
+                    </div>
+                    <div class="input-group-office">
+                        <label>قيمة المساعدة</label>
+                        <input type="number" id="modal-case-amount" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>العنوان</label>
+                        <input type="text" id="modal-case-address" class="office-input">
+                    </div>
+                    <div class="input-group-office" style="grid-column: span 2;">
+                        <label>ملاحظات إضافية</label>
+                        <textarea id="modal-case-note" class="office-input"
+                            style="height: 60px; resize: none;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="addNewCaseFromModal()">حفظ البيانات</button>
+                <button class="btn-secondary" onclick="closeCaseModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal for Adding Member to Case -->
+    <div id="member-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>إضافة فرد للأسرة: <span id="target-case-name" style="color: var(--primary-color);"></span></h3>
+                <i class="fas fa-times close-modal" onclick="closeMemberModal()"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="input-group-office" style="grid-column: span 2;">
+                        <label>اسم الفرد</label>
+                        <input type="text" id="modal-member-name" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>الرقم القومي</label>
+                        <input type="text" id="modal-member-id" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>صلة القرابة</label>
+                        <input type="text" id="modal-member-relation" class="office-input"
+                            placeholder="مثلاً: ابن، ابنة...">
+                    </div>
+                    <div class="input-group-office">
+                        <label>السن</label>
+                        <input type="number" id="modal-member-age" class="office-input">
+                    </div>
+                    <div class="input-group-office">
+                        <label>المهنة / الدراسة</label>
+                        <input type="text" id="modal-member-job" class="office-input">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="target-case-id">
+                <button class="btn-primary" onclick="saveMemberToCase()">حفظ الفرد</button>
+                <button class="btn-secondary" onclick="closeMemberModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Viewer Modal (Full Size) -->
+    <div id="image-viewer" class="modal-overlay" style="display: none; background: rgba(0,0,0,0.9);"
+        onclick="closeImageViewer()">
+        <i class="fas fa-times"
+            style="position: absolute; top: 20px; right: 20px; color: white; font-size: 2rem; cursor: pointer;"></i>
+        <img id="full-image" src=""
+            style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 20px rgba(255,255,255,0.2);">
+    </div>
+
+    <!-- Case Details Print/View Modal -->
+    <div id="details-modal" class="modal-overlay" style="display: none; background: rgba(0,0,0,0.6);">
+        <div class="modal-card"
+            style="max-width: 900px; width: 95%; background: white; border-radius: 12px; height: 90vh;">
+            <div class="modal-header" style="background: #217346; color: white; border-radius: 12px 12px 0 0;">
+                <h3>تفاصيل الحالة (عرض الطباعة)</h3>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="btn-primary" style="background: #fff; color: #217346;"
+                        onclick="printDiv('details-content')">
+                        <i class="fas fa-print"></i> طباعة الوثيقة
+                    </button>
+                    <i class="fas fa-times close-modal" onclick="closeDetailsModal()"
+                        style="color: white; font-size: 1.2rem;"></i>
+                </div>
+            </div>
+            <div class="modal-body" id="details-content"
+                style="padding: 40px; overflow-y: auto; background: white; direction: rtl;">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>
