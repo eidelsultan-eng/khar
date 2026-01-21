@@ -79,6 +79,10 @@
                         <i class="fas fa-print"></i>
                         <span>التقارير</span>
                     </li>
+                    <li data-page="affidavit">
+                        <i class="fas fa-file-check" style="color: #0078d4;"></i>
+                        <span>الإفادة</span>
+                    </li>
                     <li data-page="settings">
                         <i class="fas fa-cog"></i>
                         <span>الإعدادات</span>
@@ -99,10 +103,25 @@
                             التحكم</span></span>
                 </div>
                 <div class="header-right">
+                    <div class="zoom-controls">
+                        <button onclick="changeZoom(0.1)" class="zoom-btn" title="تكبير">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <span id="zoom-level">100%</span>
+                        <button onclick="changeZoom(-0.1)" class="zoom-btn" title="تصغير">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button onclick="resetZoom()" class="zoom-btn reset-zoom" title="إعادة ضبط">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
+                    </div>
                     <div class="search-box" style="background: rgba(255,255,255,0.2); height: 32px;">
                         <i class="fas fa-search" style="color: white;"></i>
-                        <input type="text" id="global-search" placeholder="بحث بالاسم أو الرقم القومي..."
-                            style="color: white;">
+                        <input type="text" id="global-search" placeholder="بحث بالاسم أو الرقم القومي أو الهاتف..."
+                            style="color: white;" oninput="performGlobalSearch(this.value)">
+                        <div id="global-search-results" class="dropdown-results"
+                            style="top: 35px; width: 350px; left: 0; right: auto; max-height: 400px; overflow-y: auto;">
+                        </div>
                     </div>
                     <div class="user-profile" style="padding: 0;">
                         <img src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=217346"
@@ -139,7 +158,7 @@
                         </button>
                         <button class="btn-primary"
                             style="flex-direction: column; padding: 5px 15px; font-size: 0.8rem; background: #eee; color: #333;"
-                            onclick="window.print()">
+                            onclick="printCurrentView()">
                             <i class="fas fa-print"></i>
                             <span>طباعة</span>
                         </button>
@@ -181,7 +200,7 @@
     <div id="case-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card" style="max-width: 800px;">
             <div class="modal-header">
-                <h3>إضافة حالة جديدة</h3>
+                <h3 id="modal-case-title">إضافة حالة جديدة</h3>
                 <i class="fas fa-times close-modal" onclick="closeCaseModal()"></i>
             </div>
             <div class="modal-body">
@@ -235,6 +254,14 @@
                         </div>
                     </div>
                     <div class="input-group-office">
+                        <label>هاتف الزوج/ة</label>
+                        <div class="dropdown-container">
+                            <input type="text" id="modal-case-spouse-phone" class="office-input"
+                                oninput="searchExistingCases('spousePhone', this.value)" autocomplete="off">
+                            <div id="case-spouse-phone-results" class="dropdown-results"></div>
+                        </div>
+                    </div>
+                    <div class="input-group-office">
                         <label>عدد الأفراد</label>
                         <input type="number" id="modal-case-family" class="office-input">
                     </div>
@@ -266,6 +293,12 @@
                                 ملابس الأعياد</label>
                             <label class="check-item"><input type="checkbox" value="مستفيدي الصدقات"> مستفيدي
                                 الصدقات</label>
+                            <div
+                                style="grid-column: span 2; display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                                <label style="font-size: 0.85rem; white-space: nowrap;">أخرى:</label>
+                                <input type="text" id="modal-case-type-other" class="office-input"
+                                    style="flex: 1; height: 30px;" placeholder="مثلاً: كرتونة مواد غذائية...">
+                            </div>
                         </div>
                     </div>
                     <div class="input-group-office">
@@ -278,8 +311,8 @@
                             placeholder="مثلاً: جمعية الأورمان">
                     </div>
                     <div class="input-group-office">
-                        <label>قيمة المساعدة</label>
-                        <input type="number" id="modal-case-amount" class="office-input">
+                        <label>قيمة المساعدة (مثلاً: مبلغ أو كرتونة...)</label>
+                        <input type="text" id="modal-case-amount" class="office-input">
                     </div>
                     <div class="input-group-office">
                         <label>العنوان</label>
@@ -290,10 +323,27 @@
                         <textarea id="modal-case-note" class="office-input"
                             style="height: 60px; resize: none;"></textarea>
                     </div>
+                    <div class="input-group-office"
+                        style="grid-column: span 2; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 15px;">
+                        <label style="font-weight: 700; color: var(--primary-color);"><i class="fas fa-images"></i>
+                            الوثائق والمرفقات (صور، شهادات...)</label>
+                        <div style="display: flex; gap: 15px; align-items: flex-start; margin-top: 10px;">
+                            <button type="button" class="btn-primary"
+                                style="background: #8b5cf6; padding: 10px; height: 100px; width: 100px; flex-direction: column; gap: 5px; font-size: 0.8rem;"
+                                onclick="triggerModalDocsUpload()">
+                                <i class="fas fa-plus-circle" style="font-size: 1.5rem;"></i>
+                                <span>إضافة صورة</span>
+                            </button>
+                            <div id="modal-docs-preview" style="display: flex; gap: 10px; flex-wrap: wrap; flex: 1;">
+                                <!-- Image previews will be injected here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" onclick="addNewCaseFromModal()">حفظ البيانات</button>
+                <button id="modal-case-save-btn" class="btn-primary" onclick="addNewCaseFromModal()">حفظ
+                    البيانات</button>
                 <button class="btn-secondary" onclick="closeCaseModal()">إلغاء</button>
             </div>
         </div>
