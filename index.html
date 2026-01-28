@@ -55,6 +55,10 @@
                         <i class="fas fa-chart-line"></i>
                         <span>الرئيسية</span>
                     </li>
+                    <li data-page="statistics">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>إحصائيات وتقارير</span>
+                    </li>
                     <li data-page="cases">
                         <i class="fas fa-users"></i>
                         <span>إدارة الحالات</span>
@@ -80,8 +84,8 @@
                         <span>التقارير</span>
                     </li>
                     <li data-page="affidavit">
-                        <i class="fas fa-file-check" style="color: #0078d4;"></i>
-                        <span>الإفادة</span>
+                        <i class="fas fa-file-invoice"></i>
+                        <span>نظام الإفادة</span>
                     </li>
                     <li data-page="settings">
                         <i class="fas fa-cog"></i>
@@ -96,10 +100,11 @@
             <!-- Top Header (Title Bar) -->
             <header class="top-header">
                 <div class="header-left">
-                    <button id="toggle-sidebar" class="icon-btn" style="color: white;">
+                    <button id="toggle-sidebar" class="icon-btn" style="color: var(--text-main);">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <span style="font-weight: 600; font-size: 0.9rem;">برنامج الخير - <span id="page-title">لوحة
+                    <span style="font-weight: 700; font-size: 1rem; color: var(--text-main);">برنامج الخير - <span
+                            id="page-title">لوحة
                             التحكم</span></span>
                 </div>
                 <div class="header-right">
@@ -115,17 +120,24 @@
                             <i class="fas fa-redo-alt"></i>
                         </button>
                     </div>
-                    <div class="search-box" style="background: rgba(255,255,255,0.2); height: 32px;">
-                        <i class="fas fa-search" style="color: white;"></i>
+                    <div class="search-box"
+                        style="background: #f1f5f9; height: 36px; width: 140px; border: 1px solid var(--border-color);">
+                        <i class="fas fa-hashtag" style="color: var(--primary-color); font-size: 0.9rem;"></i>
+                        <input type="text" id="search-number-input" placeholder="رقم البحث..."
+                            style="color: var(--text-main); font-weight: 600;">
+                    </div>
+                    <div class="search-box"
+                        style="background: #f1f5f9; height: 36px; border: 1px solid var(--border-color);">
+                        <i class="fas fa-search" style="color: var(--text-muted);"></i>
                         <input type="text" id="global-search" placeholder="بحث بالاسم أو الرقم القومي أو الهاتف..."
-                            style="color: white;" oninput="performGlobalSearch(this.value)">
+                            style="color: var(--text-main);" oninput="performGlobalSearch(this.value)">
                         <div id="global-search-results" class="dropdown-results"
-                            style="top: 35px; width: 350px; left: 0; right: auto; max-height: 400px; overflow-y: auto;">
+                            style="top: 38px; width: 350px; left: 0; right: auto; max-height: 400px; overflow-y: auto;">
                         </div>
                     </div>
                     <div class="user-profile" style="padding: 0;">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=ffffff&color=217346"
-                            alt="User Avatar" style="width: 28px; height: 28px;">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="User Avatar"
+                            style="width: 35px; height: 35px; border: 2px solid white; box-shadow: var(--shadow-soft);">
                     </div>
                 </div>
             </header>
@@ -151,16 +163,22 @@
                             <span id="stat-count" style="font-size: 0.7rem; color: #999;"></span>
                         </div>
                         <button class="btn-primary"
-                            style="flex-direction: column; padding: 5px 15px; font-size: 0.8rem; background: #eee; color: #333;"
+                            style="flex-direction: column; padding: 12px 25px; font-size: 1rem; background: #1d6f42; color: white; border: none; min-width: 120px;"
                             onclick="exportToExcel()">
-                            <i class="fas fa-file-excel"></i>
+                            <i class="fas fa-file-excel" style="font-size: 1.4rem; margin-bottom: 5px;"></i>
                             <span>تصدير إكسيل</span>
                         </button>
                         <button class="btn-primary"
-                            style="flex-direction: column; padding: 5px 15px; font-size: 0.8rem; background: #eee; color: #333;"
-                            onclick="printCurrentView()">
-                            <i class="fas fa-print"></i>
+                            style="flex-direction: column; padding: 12px 25px; font-size: 1rem; background: #0078d4; color: white; border: none; min-width: 120px;"
+                            onclick="openDonationPrintModal()">
+                            <i class="fas fa-print" style="font-size: 1.4rem; margin-bottom: 5px;"></i>
                             <span>طباعة</span>
+                        </button>
+                        <button class="btn-primary"
+                            style="flex-direction: column; padding: 12px 25px; font-size: 1rem; background: #da11d3; color: white; border: none; min-width: 120px;"
+                            onclick="openClassificationPrintModal()">
+                            <i class="fas fa-filter" style="font-size: 1.4rem; margin-bottom: 5px;"></i>
+                            <span>طباعة بالتصنيف</span>
                         </button>
                     </div>
                     <span class="ribbon-label">مزامنة البيانات (الفلاشة)</span>
@@ -198,13 +216,17 @@
 
     <!-- Modal for Adding Case -->
     <div id="case-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-card" style="max-width: 800px;">
+        <div class="modal-card">
             <div class="modal-header">
                 <h3 id="modal-case-title">إضافة حالة جديدة</h3>
                 <i class="fas fa-times close-modal" onclick="closeCaseModal()"></i>
             </div>
             <div class="modal-body">
                 <div class="form-grid">
+                    <div class="input-group-office">
+                        <label>رقم البحث (كود الحالة)</label>
+                        <input type="text" id="modal-case-search-number" class="office-input" placeholder="مثلاً: 101">
+                    </div>
                     <div class="input-group-office">
                         <label>المركز</label>
                         <input type="text" id="modal-case-center" class="office-input" placeholder="مثلاً: كفر الشيخ">
@@ -414,9 +436,125 @@
                         style="color: white; font-size: 1.2rem;"></i>
                 </div>
             </div>
-            <div class="modal-body" id="details-content"
+            <div id="details-content" class="modal-body"
                 style="padding: 40px; overflow-y: auto; background: white; direction: rtl;">
                 <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Print Modal -->
+    <div id="donation-print-modal" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-card" style="max-width: 850px; width: 95%; margin: auto;">
+            <div class="modal-header">
+                <h3>خيارات طباعة التقارير والكشوفات</h3>
+                <i class="fas fa-times close-modal" onclick="closeDonationPrintModal()"></i>
+            </div>
+            <div class="modal-body" style="text-align: right;">
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+                    <div class="input-group-office">
+                        <label>اختر النموذج (القالب)</label>
+                        <select id="print-template-select" class="office-input" onchange="togglePrintFields()">
+                            <option value="receipt-classic">إيصال استلام تبرع (كلاسيكي)</option>
+                            <option value="association-list">نموذج كشف الجمعية الرسمي (نظام البحث)</option>
+                            <option value="rawabit-list">نموذج بوابتك للخير (قابل للتعديل)</option>
+                            <option value="new-institution">نموذج مؤسسة جديدة (إدخال يدوي)</option>
+                            <option value="misr-elkheir">نموذج كشف مصر الخير (توزيع كراتين)</option>
+                            <option value="orman-list">نموذج جمعية الأورمان (كشف توزيع مجاني)</option>
+                            <option value="donation-list">كشف تبرعات (نطاق تاريخ)</option>
+                        </select>
+                    </div>
+
+                    <div id="dynamic-print-fields"
+                        style="display: none; margin-top: 15px; background: #f0f7f2; padding: 15px; border-radius: 8px; border: 1px solid #217346;">
+                        <div id="institution-name-group" class="input-group-office" style="margin-bottom: 10px;">
+                            <label>اسم المؤسسة (مثلاً: مؤسسة شلبي)</label>
+                            <input type="text" id="print-institution-name" class="office-input"
+                                placeholder="بوابتك للخير">
+                        </div>
+                        <div class="input-group-office">
+                            <label>نوع الاستفادة (مثلاً: كراتين رمضان)</label>
+                            <input type="text" id="print-benefit-type" class="office-input" placeholder="بطاطين الشتاء">
+                        </div>
+                    </div>
+
+                    <div class="input-group-office" style="margin-top: 15px;">
+                        <label>طريقة تحديد الحالات</label>
+                        <select id="print-selection-mode" class="office-input" onchange="togglePrintFields()">
+                            <option value="serial">حسب المسلسل (م) في الكشف</option>
+                            <option value="research-range">حسب رقم البحث (كود الحالة)</option>
+                            <option value="date">حسب تاريخ المساعدة (المنصرف)</option>
+                            <option value="reg-date">حسب تاريخ التسجيل (الحالات)</option>
+                            <option value="classification">حسب التصنيف (أيتام، غارمين...)</option>
+                            <option value="manual">اختيار حالات محددة (يدوي - عشوائي)</option>
+                        </select>
+                    </div>
+
+                    <div id="classification-selection-fields" style="display: none; margin-top: 15px;">
+                        <label>اختر التصنيف</label>
+                        <select id="print-case-classification" class="office-input">
+                            <!-- Injected by JS -->
+                        </select>
+                    </div>
+
+                    <div class="input-group-office" style="margin-top: 15px;">
+                        <label>تاريخ الكشف (يظهر في الورقة)</label>
+                        <input type="date" id="report-print-date" class="office-input">
+                    </div>
+
+                    <!-- Serial Fields -->
+                    <div id="serial-range-fields"
+                        style="display: block; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                        <div class="form-grid">
+                            <div class="input-group-office">
+                                <label id="label-from-idx">من مسلسل (م)</label>
+                                <input type="number" id="print-from-idx" class="office-input" placeholder="1">
+                            </div>
+                            <div class="input-group-office">
+                                <label id="label-to-idx">إلى مسلسل (م)</label>
+                                <input type="number" id="print-to-idx" class="office-input" placeholder="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date Fields -->
+                    <div id="date-range-fields"
+                        style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                        <div class="form-grid">
+                            <div class="input-group-office">
+                                <label>من تاريخ</label>
+                                <input type="date" id="print-from-date" class="office-input">
+                            </div>
+                            <div class="input-group-office">
+                                <label>إلى تاريخ</label>
+                                <input type="date" id="print-to-date" class="office-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Selection Fields -->
+                    <div id="manual-selection-fields"
+                        style="display: none; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 15px;">
+                        <label>ابحث واختر الحالات</label>
+                        <input type="text" id="manual-search-input" class="office-input"
+                            placeholder="ابحث بالاسم أو الرقم القومي..." oninput="filterManualSelectionList()">
+                        <div id="manual-cases-list"
+                            style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; margin-top: 8px; padding: 5px; background: #fff;">
+                            <!-- Cases injected by JS -->
+                        </div>
+                        <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">تم اختيار <span id="selected-count"
+                                style="font-weight: bold; color: var(--primary-color);">0</span> حالة</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="print-target-donation-id">
+                <button class="btn-primary" style="padding: 12px 30px; font-size: 1.1rem;"
+                    onclick="proceedToPrintDonation()">
+                    <i class="fas fa-print"></i> معالجة وطباعة
+                </button>
+                <button class="btn-secondary" onclick="closeDonationPrintModal()">إلغاء</button>
             </div>
         </div>
     </div>
